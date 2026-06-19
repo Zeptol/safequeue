@@ -21,6 +21,7 @@ local TOOLTIP_UPDATE_TIME = TOOLTIP_UPDATE_TIME
 local WOW_PROJECT_ID = WOW_PROJECT_ID
 local WOW_PROJECT_MAINLINE = WOW_PROJECT_MAINLINE
 local _G = _G
+local floor = math.floor
 local format = format
 local hooksecurefunc = hooksecurefunc
 
@@ -175,6 +176,52 @@ function SafeQueue:HideBlizzardPopupExpiresText()
     end
 end
 
+local function FormatMinimapTime(secs)
+    if secs >= 60 then
+        return format("%d:%02d", floor(secs / 60), secs % 60)
+    end
+    return tostring(secs)
+end
+
+function SafeQueue:SetMinimapExpiresText(secs, color)
+    local frame = _G.MiniMapBattlefieldFrame
+    if not frame then return end
+
+    if secs <= 10 then
+        self:HideMinimapExpiresText()
+        return
+    end
+
+    if not frame.SafeQueueTimerText then
+        local timer = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+        timer:SetPoint("CENTER", frame, "CENTER", 0, 0)
+        timer:SetJustifyH("CENTER")
+        timer:SetShadowOffset(1, -1)
+        timer:SetShadowColor(0, 0, 0, 1)
+        frame.SafeQueueTimerText = timer
+    end
+
+    local r, g, b = 1, 0.82, 0
+    if color == "20ff20" then
+        r, g, b = 0.13, 1, 0.13
+    elseif color == "ffff00" then
+        r, g, b = 1, 1, 0
+    elseif color == "ff0000" then
+        r, g, b = 1, 0, 0
+    end
+
+    frame.SafeQueueTimerText:SetTextColor(r, g, b)
+    frame.SafeQueueTimerText:SetText(FormatMinimapTime(secs))
+    frame.SafeQueueTimerText:Show()
+end
+
+function SafeQueue:HideMinimapExpiresText()
+    local frame = _G.MiniMapBattlefieldFrame
+    if frame and frame.SafeQueueTimerText then
+        frame.SafeQueueTimerText:Hide()
+    end
+end
+
 function SafeQueue:SetExpiresText()
     local battlefieldId = self.battlefieldId
     if (not battlefieldId) then return end
@@ -191,6 +238,7 @@ function SafeQueue:SetExpiresText()
     local text = L["SafeQueue expires in |cff%s%s|r"]:format(color, SecondsToTime(secs))
     self.text:SetText(text)
     self:SetBlizzardPopupExpiresText(text)
+    self:SetMinimapExpiresText(secs, color)
     if PVPReadyDialog then
         if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
             -- retail: just show expiration
@@ -217,10 +265,12 @@ update:SetScript("OnUpdate", function(self, elapsed)
         if not IsBattlefieldConfirm(GetBattlefieldStatus(battlefieldId)) then
             SafeQueue.battlefieldId = nil
             SafeQueue:HideBlizzardPopupExpiresText()
+            SafeQueue:HideMinimapExpiresText()
             if SafeQueue.HidePopup then SafeQueue:HidePopup() end
             return
         end
         SafeQueue:SetExpiresText()
+        timer = TOOLTIP_UPDATE_TIME
     end
     self.timer = timer
 end)
@@ -251,6 +301,7 @@ function SafeQueue:UPDATE_BATTLEFIELD_STATUS()
     if (not isConfirm) then
         self.battlefieldId = nil
         self:HideBlizzardPopupExpiresText()
+        self:HideMinimapExpiresText()
         if self.HidePopup then self:HidePopup() end
     end
 end
