@@ -1,0 +1,47 @@
+std = "lua51"
+max_line_length = false
+exclude_files = {
+    ".luacheckrc",
+    "Libs/",
+}
+ignore = {
+    "11./SLASH_.*",
+    "211",
+    "212",
+    "213",
+    "311",
+    "431",
+    "432",
+}
+globals = {
+    "C_Map",
+    "CreateFrame",
+    "DEFAULT_CHAT_FRAME",
+    "ENTER_BATTLE",
+    "GetBattlefieldPortExpiration",
+    "GetBattlefieldStatus",
+    "GetBattlefieldTimeWaited",
+    "GetMaxBattlefieldID",
+    "GetTime",
+    "InCombatLockdown",
+    "LibStub",
+    "PVPReadyDialog",
+    "PVPReadyDialog_Display",
+    "PlaySound",
+    "REQUIRES_RELOAD",
+    "SOUNDKIT",
+    "SafeQueue",
+    "SecondsToTime",
+    "StaticPopupSpecial_Hide",
+    "StaticPopup_FindVisible",
+    "StaticPopup_Hide",
+    "TOOLTIP_UPDATE_TIME",
+    "WOW_PROJECT_BURNING_CRUSADE_CLASSIC",
+    "WOW_PROJECT_CLASSIC",
+    "WOW_PROJECT_ID",
+    "WOW_PROJECT_MAINLINE",
+    "format",
+    "hooksecurefunc",
+    "issecurevariable",
+    "nop",
+}
